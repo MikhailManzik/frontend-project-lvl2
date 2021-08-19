@@ -7,13 +7,13 @@
     "gendiff": "bin/gendiff.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest --bail"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MikhailManzik/frontend-project-lvl2.git"
   },
-  "author": "",
+  "author": "Mikhail Manzik",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/MikhailManzik/frontend-project-lvl2/issues"
@@ -22,11 +22,18 @@
   "type": "module",
   "dependencies": {
     "commander": "^8.0.0",
-    "lodash": "^4.17.21"
+    "js": "^0.1.0",
+    "lodash": "^4.17.21",
+    "node": "^16.6.1"
   },
   "devDependencies": {
+    "@jest/globals": "^27.0.6",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.24.0"
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "jest": "^27.0.6",
+    "jest-circus": "^27.0.6",
+    "jest-cli": "^27.0.6"
   }
 }
