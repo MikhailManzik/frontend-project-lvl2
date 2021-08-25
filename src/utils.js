@@ -1,12 +1,11 @@
 import fs from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const readFile = (file) => {
-  const fullPath = resolve(__dirname, '..', '__fixtures__', file);
+  const fullPath = path.resolve(file);
   return fs.readFileSync(fullPath, { encoding: 'utf8' });
 };
 
