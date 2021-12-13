@@ -1,12 +1,30 @@
 import fs from 'fs';
 import path from 'path';
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
-const readFile = (file) => {
+export const readFile = (file) => {
   const fullPath = path.resolve(file);
   return fs.readFileSync(fullPath, { encoding: 'utf8' });
 };
 
-export default readFile;
+export const stringify = (primitives, replacer = ' ', spacesCount = 1) => {
+  if (typeof primitives !== 'object') {
+    return String(primitives);
+  }
+
+  let result = '';
+  const iter = (data, depth) => {
+    const entries = Object.entries(data);
+    const tree = entries.map((item) => {
+      const [key, value] = item;
+      if (typeof value === 'object') {
+        return `${replacer.repeat(spacesCount + depth)}${key}: {\n${iter(value, spacesCount + depth)}${replacer.repeat(spacesCount + depth)}}\n`;
+      }
+      return `${replacer.repeat(spacesCount + depth)}${key}: ${value}\n`;
+    });
+
+    return tree.join('');
+  };
+
+  result = iter(primitives, 0);
+  return `{\n${result}}`;
+};

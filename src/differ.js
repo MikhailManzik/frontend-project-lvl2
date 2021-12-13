@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import path from 'path';
-import readFile from './utils.js';
+import { readFile } from './utils.js';
 import parser from './parsers.js';
+import types from './types.js';
 
 export default (file1, file2) => {
   const filepath1 = readFile(file1);
@@ -10,27 +11,48 @@ export default (file1, file2) => {
   const format = path.extname(file1).slice(1);
   const parserType = parser(format);
 
-  const parsedFile1 = parserType(filepath1);
-  const parsedFile2 = parserType(filepath2);
+  const obj1 = parserType(filepath1);
+  const obj2 = parserType(filepath2);
 
-  const keys1 = Object.keys(parsedFile1);
-  const keys2 = Object.keys(parsedFile2);
+  const generateTree = (data1, data2) => {
+    const keys1 = Object.keys(data1);
+    const keys2 = Object.keys(data2);
 
-  const sumKeys = _.union(keys1, keys2).sort();
+    const sumKeys = _.union(keys1, keys2).sort();
 
-  const result = sumKeys.map((key) => {
-    let str = '';
-    if (parsedFile1[key] === parsedFile2[key]) {
-      str = `  ${key}: ${parsedFile1[key]}\n`;
-    } if (parsedFile1[key] !== parsedFile2[key]) {
-      str = `- ${key}: ${parsedFile1[key]}\n + ${key}: ${parsedFile2[key]}\n`;
-    } if (!_.has(parsedFile1, key)) {
-      str = `+ ${key}: ${parsedFile2[key]}\n`;
-    } if (!_.has(parsedFile2, key)) {
-      str = `- ${key}: ${parsedFile1[key]}\n`;
-    }
-    return str;
-  }).join(' ');
+    return sumKeys.map((key) => {
+      if (typeof data1[key] === 'object' && typeof data2[key] === 'object') {
+        return {
+          key,
+          value: generateTree(data1[key], data2[key]),
+        };
+      } if (!_.has(data1, key)) {
+        return {
+          type: types.addOperation,
+          key,
+          value: data2[key],
+        };
+      } if (!_.has(data2, key)) {
+        return {
+          type: types.removeOperation,
+          key,
+          value: data1[key],
+        };
+      } if (data1[key] !== data2[key]) {
+        return {
+          type: types.updateOperation,
+          key,
+          oldValue: data1[key],
+          newValue: data2[key],
+        };
+      }
+      return {
+        type: types.unchangedOperation,
+        key,
+        value: data1[key],
+      };
+    });
+  };
 
-  console.log(`{\n ${result}}`);
+  return generateTree(obj1, obj2);
 };
